@@ -8,6 +8,7 @@ build
 # Compiled class files
 *.class
 *.jar
+!gradle/wrapper/gradle-wrapper.jar
 *.war
 *.ear
 # Generated files

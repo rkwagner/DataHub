@@ -1,0 +1,15 @@
+# Ignore Gradle project-specific cache directory
+.gradle
+
+# Ignore Gradle build output directory
+build
+
+### JVM / Scala / Java ###
+# Compiled class files
+*.class
+*.jar
+*.war
+*.ear
+# Generated files
+/bin/
+/target/

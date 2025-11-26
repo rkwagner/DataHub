@@ -62,6 +62,9 @@ subprojects {
     tasks.named<Test>("test") {
         useJUnitPlatform()
         finalizedBy(tasks.named("jacocoTestReport"))
+        
+        // Enable parallel execution to speed up tests
+        maxParallelForks = (Runtime.getRuntime().availableProcessors() / 2).coerceAtLeast(1)
 
         testLogging {
             events("passed", "skipped", "failed", "standardOut", "standardError")

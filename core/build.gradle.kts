@@ -6,7 +6,7 @@ plugins {
 // Define versions consistently (must match hudi/build.gradle.kts)
 val scalaVersion = "2.12"
 val sparkVersion = "3.5.1" 
-val hudiVersion = "1.1.0"
+val hudiVersion = "0.15.0"
 val junitVersion = "5.12.1"
 
 dependencies {

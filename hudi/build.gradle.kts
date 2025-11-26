@@ -2,7 +2,8 @@ dependencies {
     implementation(project(":core"))
     
     // Apache Hudi dependencies for configuration classes
-    implementation("org.apache.hudi:hudi-common:1.0.0")
+    // Use compileOnly because the runtime (App) will provide the full Hudi bundle
+    compileOnly(libs.hudi.common)
     
     testImplementation(testFixtures(project(":core")))
 }

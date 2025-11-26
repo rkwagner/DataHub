@@ -4,27 +4,49 @@
 
 > **⚠️ NOTICE**: This repository is currently **CLOSED SOURCE** and under active development. It is not ready for external use or distribution.
 
-## Project Structure
+## Feature Status
 
-- **`core`**: Foundational interfaces (`Table`, `Schema`, `Field`) and reusable metadata definitions.
-- **`hudi`**: Hudi-specific implementations, properties management, and DDL generation logic.
-- **`api`**: (Planned) REST API definitions for metadata management.
-- **`schema`**: (Planned) Schema registry integrations and converters.
-- **`orchestration`**: (Planned) Airflow/Dagster integration patterns.
-- **`observability`**: (Planned) Data quality and lineage tracking.
+| Module | Status | Description |
+| :--- | :--- | :--- |
+| **`core`** | 🟢 Implemented | Foundational interfaces (`Table`, `Schema`, `Field`) and reusable metadata definitions. |
+| **`hudi`** | 🟡 In Progress | Hudi-specific implementations, properties management, and DDL generation logic. |
+| **`api`** | 🔴 Planned | REST API definitions for metadata management. |
+| **`schema`** | 🔴 Planned | Schema registry integrations and converters. |
+| **`orchestration`** | 🔴 Planned | Airflow/Dagster integration patterns. |
+| **`observability`** | 🔴 Planned | Data quality and lineage tracking. |
 
 ## Prerequisites
 
 - JDK 17+
 - Gradle (wrapper provided)
+- Docker & Docker Compose (for local environment)
 
-## Building the Project
+## Local Development
+
+### Building the Project
 
 To build the project and run tests:
 
 ```bash
 ./gradlew build
 ```
+
+### Local Trino Environment
+
+This project includes a Docker Compose setup to run a local data platform consisting of:
+- **Trino**: Distributed SQL query engine.
+- **MinIO**: S3-compatible object storage.
+- **Hive Metastore**: Metadata service for Trino/Hudi.
+- **Postgres**: Backend for Hive Metastore.
+
+To start the environment:
+
+```bash
+docker-compose up -d
+```
+
+- **Trino UI**: [http://localhost:8080](http://localhost:8080) (User: `admin`)
+- **MinIO Console**: [http://localhost:9001](http://localhost:9001) (User: `minio`, Pass: `minio123`)
 
 ## Code Style
 

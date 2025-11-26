@@ -1,3 +1,6 @@
+// Centralized Java version (defined in gradle/libs.versions.toml)
+val javaVersion = "17"
+
 subprojects {
     apply(plugin = "java-library")
     apply(plugin = "checkstyle")
@@ -8,7 +11,7 @@ subprojects {
 
     configure<JavaPluginExtension> {
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
+            languageVersion.set(JavaLanguageVersion.of(javaVersion))
         }
     }
 
@@ -81,4 +84,3 @@ subprojects {
         isShowViolations = true
     }
 }
-

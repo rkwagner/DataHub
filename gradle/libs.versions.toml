@@ -2,9 +2,62 @@
 # https://docs.gradle.org/current/userguide/platforms.html#sub::toml-dependencies-format
 
 [versions]
+# Language
+java = "17"
+
+# Core Dependencies
 guava = "33.4.6-jre"
 junit-jupiter = "5.12.1"
+slf4j = "2.0.16"
+log4j = "2.23.1"
+avro = "1.11.3"
+
+# Big Data Stack
+spark = "3.5.0"
+hadoop = "3.3.4"
+aws-java-sdk = "1.12.262"
+hudi = "0.15.0"
+
+# Build Tools
+checkstyle = "10.12.5"
+
+# Local Development Configuration (will be moved to environment variables/secrets)
+minio-endpoint = "http://host.docker.internal:9000"
+minio-access-key = "minio"
+minio-secret-key = "minio123"
+minio-container-name = "minio-datahub"
+minio-image = "minio/minio"
+minio-bucket-name = "hudi-data"
+minio-port = "9000"
 
 [libraries]
+# Core
 guava = { module = "com.google.guava:guava", version.ref = "guava" }
 junit-jupiter = { module = "org.junit.jupiter:junit-jupiter", version.ref = "junit-jupiter" }
+
+# Logging
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version.ref = "slf4j" }
+log4j-api = { module = "org.apache.logging.log4j:log4j-api", version.ref = "log4j" }
+log4j-core = { module = "org.apache.logging.log4j:log4j-core", version.ref = "log4j" }
+log4j-slf4j2-impl = { module = "org.apache.logging.log4j:log4j-slf4j2-impl", version.ref = "log4j" }
+
+# Avro
+avro = { module = "org.apache.avro:avro", version.ref = "avro" }
+avro-compiler = { module = "org.apache.avro:avro-compiler", version.ref = "avro" }
+
+# Spark
+spark-sql = { module = "org.apache.spark:spark-sql_2.12", version.ref = "spark" }
+spark-hive = { module = "org.apache.spark:spark-hive_2.12", version.ref = "spark" }
+
+# Hadoop
+hadoop-aws = { module = "org.apache.hadoop:hadoop-aws", version.ref = "hadoop" }
+hadoop-common = { module = "org.apache.hadoop:hadoop-common", version.ref = "hadoop" }
+hadoop-client = { module = "org.apache.hadoop:hadoop-client", version.ref = "hadoop" }
+
+# AWS
+aws-java-sdk-bundle = { module = "com.amazonaws:aws-java-sdk-bundle", version.ref = "aws-java-sdk" }
+
+# Hudi
+hudi-spark-bundle = { module = "org.apache.hudi:hudi-spark3.5-bundle_2.12", version.ref = "hudi" }
+hudi-common = { module = "org.apache.hudi:hudi-common", version.ref = "hudi" }

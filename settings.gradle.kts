@@ -11,4 +11,4 @@ plugins {
 }
 
 rootProject.name = "DataHub"
-include("app", "core", "api", "schema", "orchestration", "observability", "hudi")
+include("example", "core", "api", "schema", "orchestration", "observability", "hudi")

@@ -10,7 +10,29 @@ permissions:
   contents: read
 
 jobs:
+  checkstyle:
+    name: Code Quality (Checkstyle)
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+    
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+    
+    - name: Run Checkstyle
+      run: |
+        echo "🔍 Running Checkstyle checks in parallel..."
+        ./gradlew checkstyleMain checkstyleTest --parallel --build-cache
+
   build:
+    name: Build and Test
     runs-on: ubuntu-latest
 
     steps:
@@ -93,11 +115,6 @@ jobs:
         
         # Verify bucket exists
         ./mc ls myminio/ | grep hudi-data && echo "✅ Bucket verified" || echo "⚠️  Bucket not found in listing"
-    
-    - name: Run Checkstyle
-      run: |
-        echo "🔍 Running Checkstyle checks..."
-        ./gradlew checkstyleMain checkstyleTest
     
     - name: Build with Gradle
       run: |

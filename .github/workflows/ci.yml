@@ -135,6 +135,15 @@ jobs:
         path: build/reports/jacoco/jacocoRootReport/html/**
         retention-days: 14
 
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Generate Coverage Summary
+      run: |
+        python .github/scripts/generate_coverage_summary.py .
+
     - name: Upload Coverage XMLs
       if: always()
       uses: actions/upload-artifact@v4
@@ -144,6 +153,13 @@ jobs:
           **/build/reports/jacoco/test/jacocoTestReport.xml
           build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
         retention-days: 1
+
+    - name: Post Coverage Comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: github.event_name == 'pull_request'
+      with:
+        recreate: true
+        path: coverage-summary.md
 
     - name: Stop MinIO
       if: always()

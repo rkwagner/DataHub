@@ -119,13 +119,21 @@ jobs:
     - name: Build with Gradle
       run: |
         echo "🏗️  Building project with Gradle..."
-        ./gradlew build
+        ./gradlew build jacocoRootReport
       env:
         CI: true
         MINIO_ENDPOINT: http://localhost:9000
         MINIO_ACCESS_KEY: minio
         MINIO_SECRET_KEY: minio123
     
+    - name: Upload Coverage Reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: build/reports/jacoco/jacocoRootReport/html/**
+        retention-days: 14
+
     - name: Stop MinIO
       if: always()
       run: |

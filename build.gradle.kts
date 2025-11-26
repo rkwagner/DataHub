@@ -1,13 +1,20 @@
+plugins {
+    id("jacoco")
+}
+
 // Centralized Java version (defined in gradle/libs.versions.toml)
 val javaVersion = "17"
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
 
 subprojects {
     apply(plugin = "java-library")
     apply(plugin = "checkstyle")
-
-    repositories {
-        mavenCentral()
-    }
+    apply(plugin = "jacoco")
 
     configure<JavaPluginExtension> {
         toolchain {
@@ -34,7 +41,7 @@ subprojects {
 
     // Fallback: Apply the exclusion outside the dependencies block if the above fails
     // This is often required when mixing Groovy/Kotlin closure styles in a subprojects block.
-    configurations.all {
+    configurations.configureEach {
         resolutionStrategy {
             // Force Log4j's SLF4J 2 implementation over the old slf4j-log4j12
             eachDependency {
@@ -54,6 +61,7 @@ subprojects {
 
     tasks.named<Test>("test") {
         useJUnitPlatform()
+        finalizedBy(tasks.named("jacocoTestReport"))
 
         testLogging {
             events("passed", "skipped", "failed", "standardOut", "standardError")
@@ -73,7 +81,42 @@ subprojects {
             }
             null
         }))
+    }
+
+    tasks.named<JacocoReport>("jacocoTestReport") {
+        dependsOn(tasks.named("test"))
+        reports {
+            xml.required.set(true)
+            html.required.set(true)
+            csv.required.set(true)
         }
+        
+        doLast {
+            val reportDir = reports.html.outputLocation.get().asFile
+            println("\nJacoco Report: ${reportDir.toURI()}index.html")
+            
+            val csvFile = reports.csv.outputLocation.get().asFile
+            if (csvFile.exists()) {
+                val lines = csvFile.readLines()
+                if (lines.size > 1) {
+                    var missed = 0
+                    var covered = 0
+                    // Skip header (line 0)
+                    for (i in 1 until lines.size) {
+                        val columns = lines[i].split(",")
+                        // INSTRUCTION_MISSED is index 3, INSTRUCTION_COVERED is index 4
+                        if (columns.size > 4) {
+                            missed += columns[3].toIntOrNull() ?: 0
+                            covered += columns[4].toIntOrNull() ?: 0
+                        }
+                    }
+                    val total = missed + covered
+                    val percentage = if (total > 0) (covered.toDouble() / total) * 100 else 0.0
+                    println(String.format("Total Instruction Coverage: %.2f%%", percentage))
+                }
+            }
+        }
+    }
 
     configure<CheckstyleExtension> {
         configFile = rootProject.file("config/checkstyle/checkstyle.xml")
@@ -82,5 +125,37 @@ subprojects {
         isIgnoreFailures = false
         // Show violations in the console
         isShowViolations = true
+    }
+}
+
+// Task to merge all coverage reports into one
+tasks.register<JacocoReport>("jacocoRootReport") {
+    dependsOn(subprojects.map { it.tasks.named("jacocoTestReport") })
+    dependsOn(subprojects.map { it.tasks.named("test") })
+
+    // Collect source directories and class outputs from all subprojects
+    val mainSrcDirs = subprojects.map { project ->
+        project.extensions.getByType<JavaPluginExtension>().sourceSets.getByName("main").allSource.srcDirs
+    }
+    val mainOutputs = subprojects.map { project ->
+        project.extensions.getByType<JavaPluginExtension>().sourceSets.getByName("main").output
+    }
+
+    additionalSourceDirs.setFrom(mainSrcDirs)
+    sourceDirectories.setFrom(mainSrcDirs)
+    classDirectories.setFrom(mainOutputs)
+    executionData.setFrom(project.fileTree(".") {
+        include("**/build/jacoco/test.exec")
+    })
+
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(true)
+    }
+    
+    doLast {
+        val reportDir = reports.html.outputLocation.get().asFile
+        println("\nCombined Jacoco Report: ${reportDir.toURI()}index.html")
     }
 }

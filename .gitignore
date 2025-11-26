@@ -17,4 +17,4 @@ build
 
 #AI Generated files
 PR_DESCRIPTION.md
-test*
+test_output*.txt

@@ -4,23 +4,21 @@ plugins {
     id("java")
 }
 
+// Inherit the main runtime dependencies and the compile-only dependencies (Spark/Hadoop).
+val sparkClasspath by configurations.creating {
+    isCanBeResolved = true
+    extendsFrom(configurations.implementation.get())
+    extendsFrom(configurations.compileOnly.get())
+}
+
 repositories {
     mavenCentral()
 }
 
 // Exclude conflicting SLF4J bindings globally
-configurations.all {
+configurations.configureEach {
     exclude(group = "org.apache.logging.log4j", module = "log4j-slf4j-impl")
     exclude(group = "org.slf4j", module = "slf4j-log4j12")
-}
-
-val sparkClasspath by configurations.creating {
-    // This allows the configuration to be resolved into a set of files for the JavaExec task.
-    isCanBeResolved = true 
-    
-    // Inherit the main runtime dependencies and the compile-only dependencies (Spark/Hadoop).
-    extendsFrom(configurations.implementation.get())
-    extendsFrom(configurations.compileOnly.get()) 
 }
 
 dependencies {
@@ -153,8 +151,9 @@ tasks.register("runExample", JavaExec::class) {
 
 // Configure test task to use the same JVM args and environment
 tasks.test {
+    useJUnitPlatform()
+    
     // Only depend on MinIO Docker tasks if not running in CI
-    // In CI, MinIO runs as a GitHub Actions service
     val isCI = System.getenv("CI") == "true"
     if (!isCI) {
         dependsOn("minioCreateBucket")

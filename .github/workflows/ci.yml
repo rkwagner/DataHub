@@ -8,6 +8,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   checkstyle:
@@ -119,13 +120,47 @@ jobs:
     - name: Build with Gradle
       run: |
         echo "🏗️  Building project with Gradle..."
-        ./gradlew build
+        ./gradlew build jacocoRootReport --continue
       env:
         CI: true
         MINIO_ENDPOINT: http://localhost:9000
         MINIO_ACCESS_KEY: minio
         MINIO_SECRET_KEY: minio123
     
+    - name: Upload Coverage Reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: build/reports/jacoco/jacocoRootReport/html/**
+        retention-days: 14
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Generate Coverage Summary
+      run: |
+        python .github/scripts/generate_coverage_summary.py .
+
+    - name: Upload Coverage XMLs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-xml-reports
+        path: |
+          **/build/reports/jacoco/test/jacocoTestReport.xml
+          build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
+        retention-days: 1
+
+    - name: Post Coverage Comment
+      uses: marocchino/sticky-pull-request-comment@v2
+      if: github.event_name == 'pull_request'
+      with:
+        recreate: true
+        path: coverage-summary.md
+
     - name: Stop MinIO
       if: always()
       run: |

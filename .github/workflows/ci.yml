@@ -146,6 +146,8 @@ jobs:
         min-coverage-changed-files: 80
         title: Code Coverage
         update-comment: true
+        aggregate-paths: |
+          **/build/reports/jacoco/test/jacocoTestReport.xml
 
     - name: Stop MinIO
       if: always()

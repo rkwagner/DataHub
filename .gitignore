@@ -14,3 +14,7 @@ build
 # Generated files
 /bin/
 /target/
+
+#AI Generated files
+PR_DESCRIPTION.md
+test*

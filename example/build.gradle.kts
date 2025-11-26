@@ -153,8 +153,13 @@ tasks.register("runExample", JavaExec::class) {
 
 // Configure test task to use the same JVM args and environment
 tasks.test {
-    dependsOn("minioCreateBucket")
-    finalizedBy("minioStop")
+    // Only depend on MinIO Docker tasks if not running in CI
+    // In CI, MinIO runs as a GitHub Actions service
+    val isCI = System.getenv("CI") == "true"
+    if (!isCI) {
+        dependsOn("minioCreateBucket")
+        finalizedBy("minioStop")
+    }
     
     jvmArgs = listOf(
         "--add-opens=java.base/java.lang=ALL-UNNAMED",

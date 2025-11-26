@@ -131,7 +131,6 @@ subprojects {
 // Task to merge all coverage reports into one
 tasks.register<JacocoReport>("jacocoRootReport") {
     dependsOn(subprojects.map { it.tasks.named("jacocoTestReport") })
-    dependsOn(subprojects.map { it.tasks.named("test") })
 
     // Collect source directories and class outputs from all subprojects
     val mainSrcDirs = subprojects.map { project ->

@@ -134,6 +134,24 @@ jobs:
         path: build/reports/jacoco/jacocoRootReport/html/**
         retention-days: 14
 
+    - name: Code Coverage Summary
+      if: always()
+      uses: irongut/CodeCoverageSummary@v1.3.0
+      with:
+        filename: build/reports/jacoco/jacocoRootReport/jacocoRootReport.xml
+        badge: true
+        fail_below_min: false
+        format: markdown
+        hide_branch_rate: false
+        hide_complexity: true
+        indicators: true
+        output: both
+        thresholds: '60 80'
+
+    - name: Add Coverage to Job Summary
+      if: always()
+      run: cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
     - name: Stop MinIO
       if: always()
       run: |
